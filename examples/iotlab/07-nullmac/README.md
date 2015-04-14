@@ -7,8 +7,8 @@
 
 **This project contains severals tests using differents MAC layer**
 
--NullMAC layer
--CSMA layer
--Default Contiki layer
+- *NullMAC layer
+- *CSMA layer
+- *Default Contiki layer
 
 
