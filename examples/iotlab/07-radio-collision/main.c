@@ -8,25 +8,23 @@
 #include "dev/serial-line.h"
 #include "lib/memb.h"
 #include "lib/list.h"
+//#include "common-config.h"
 
 #ifdef IOTLAB_M3
 #include "packet.h"
-#include "dev/light-sensor.h"
-#include "dev/pressure-sensor.h"
-#include "pressure_light.h"
+//#include "dev/light-sensor.h"
+//#include "dev/pressure-sensor.h"
+//#include "pressure_light.h"
+
 #else
-#include "ds1722.h"
-#include "lib/sensors.h"
-#include "temperature.h"
+//#include "temperature-sensor.h"
+//#include "lib/sensors.h"
+//#include "temperature.h"
 #endif
 
 /*---------------------------------------------------------------------------*/
 
-#define PHY_MAX_TX_LENGTH 16
-#define CHANNEL 11
-#define MAX_NEIGHBORS 50
 
-char *ptr;
 static struct abc_conn abc;
 volatile int8_t print_help = 1;
 
@@ -42,19 +40,7 @@ struct energy_time {
   long consumption_RX;
 };
 
-/*This structure holds information about neighbors */
-struct neighbor {
-  rimeaddr_t addr ;
-  struct neighbor *next;
-};
-
-/*This structure defines a memory pool from which we allocate neighbor entries */
-MEMB(neighbors_memb,struct neighbor, MAX_NEIGHBORS);
-
-/*This structure is a contiki list that holds all the neighbors who recieve the broadcast message */
-LIST(neighbors_list);
-
-extern process_event_t serial_line_event_message;
+rimeaddr_t k;
 static struct energy_time last;
 static struct energy_time diff;
 
@@ -98,15 +84,27 @@ static void energy_consumption_WSN430 () {
 
 #endif
 
-/*---------------------------------------------------------------------------*/
-/*This function is called for every incoming unicast packet */
-static void recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
-{
-   printf(" unicast message received %d.%d: %.*s\n",from->u8[0], from->u8[1],packetbuf_datalen(), (char *)packetbuf_dataptr());
-  printf("HIIIIIIII");
 
+/*---------------------------------------------------------------------------*/
+/* This function sends a unicast message to nodes on the list */
+
+static void unicast_message () {
+
+        int val = 0;
+
+        packetbuf_copyfrom("Hi!",3);
+ 
+        printf("sending unicast to %d.%d\n",k.u8[0],k.u8[1]);
+ 	val = unicast_send(&unicast,&k);
+        if (val!=0){
+                printf(" unicast message sent \n");
+                leds_on(LEDS_GREEN);
+        }
+        else {
+                printf(" unicast message not sent \n");
+                leds_on(LEDS_RED);
+        }
 }
-static const struct unicast_callbacks unicast_callbacks = {recv_uc};
 
 /*---------------------------------------------------------------------------*/
 /*This function is called for every incoming broadcast packet for the source node, it shows the energy values */
@@ -121,46 +119,37 @@ static void abc_recv(struct broadcast_conn *c)
 /*---------------------------------------------------------------------------*/
 /*This function is called for every incoming broadcast packet */
 
-static void broadcast_uc(struct broadcast_conn *c,const rimeaddr_t * from)
+static void  broadcast_recv(struct broadcast_conn *c,const rimeaddr_t * from)
 {
  
-	struct neighbor *n;
-     
-	/* Check if we already know this neighbor */   
-       for(n = list_head(neighbors_list); n != NULL; n = list_item_next(n)) { 
-	 if(rimeaddr_cmp(&n->addr, from)) {
-	   break;
-	}}	
-     	 
-	/* If  this neighbor was not found in our list, and we
-	allocate a new struct neighbor from the neighbors_memb memory pool. */
-	
-	if(n == NULL) {
- 	 n = memb_alloc(&neighbors_memb);
-
-	if(n == NULL) {
-	return;
-	}
-	rimeaddr_copy(&n->addr,from);
-	list_add(neighbors_list,n);
-}
-	
-	
-printf(" broadcast message received from %d.%d: %.*s\n",from->u8[0], from->u8[1],packetbuf_datalen(), (char *)packetbuf_dataptr());
-
-	/* These functions show the pressure and light values to the M3 node */
+        static char msg[] = "b";
+	rimeaddr_copy(&k,from);
+	      
+printf(" broadcast message received from %d.%d: '%s'\n",k.u8[0], k.u8[1], (char *)packetbuf_dataptr());	
+/* These functions show the pressure and light values to the M3 node */
 #ifdef IOTLAB_M3
 
-  	process_light_pressure();
+  //	process_light_pressure();
 #else
 	 /* These functions show the temperature value to the WSN430 node */
-   	temperature_sensor_wsn430();
+  // 	temperature_sensor_wsn430();
        
 #endif
+      
+       process_post(&unicast_process,PROCESS_EVENT_CONTINUE,msg);
 
    }
-static const struct broadcast_callbacks broadcast_callbacks = {broadcast_uc,abc_recv};
+static const struct broadcast_callbacks broadcast_callbacks = {broadcast_recv,abc_recv};
 
+
+/*---------------------------------------------------------------------------*/
+/*This function is called for every incoming unicast packet */
+static void recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
+{
+	printf(" unicast message received from %d.%d: '%s'\n",from->u8[0], from->u8[1], (char *)packetbuf_dataptr());
+
+}
+static const struct unicast_callbacks unicast_callbacks = {recv_uc};
 /*---------------------------------------------------------------------------*/
 
 /* This function sends a broadcast message */
@@ -168,7 +157,6 @@ static const struct broadcast_callbacks broadcast_callbacks = {broadcast_uc,abc_
 static void broadcast_message() {
 
 	   int ret, Vcc = 3;
-
 /*Inizialize leds and  M3 nodes configuration */
        
 	    leds_init();
@@ -186,9 +174,9 @@ static void broadcast_message() {
            last.listen = energest_type_time(ENERGEST_TYPE_LISTEN);
           
 	   /* Send a broadcast message */
-	
-           packetbuf_copyfrom("Hello", 6);
+           packetbuf_copyfrom("hello",6);
            ret = broadcast_send(&broadcast);
+ printf("rimeaddr_node_addr = [%u, %u]\n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1]);
 
            if (ret!=0){
                   printf("broadcast message sent \n");
@@ -217,38 +205,6 @@ static void broadcast_message() {
 	 
  }
 
-/*---------------------------------------------------------------------------*/
-/* This function sends a unicast message to nodes on the list */
-
-static void unicast_message () {
-
-        int val = 0;
-        struct neighbor *n;
-        int randn,i;
-
-        /* Pick the source addr and send a unicast message to it. */
-       
-	 if(list_length(neighbors_list) > 0) {
-           randn = random_rand() % list_length(neighbors_list);
-           n = list_head(neighbors_list);
-           for(i = 0; i < randn; i++) {
-           n = list_item_next(n); }  
-
-        printf("sending unicast to %d.%d\n",n->addr.u8[0],n->addr.u8[1]);
-        packetbuf_copyfrom("Hi!",3);
-
-        val = unicast_send(&unicast,&n->addr);
-
-        if (val!=0){
-                printf(" unicast message sent \n");
-                leds_on(LEDS_GREEN);
-        }
-        else {
-                printf(" unicast message not sent \n");
-                leds_on(LEDS_RED);
-        }
-   }
-}
 
 /*---------------------------------------------------------------------------*/
 /* This function prints the help to the users*/
@@ -275,14 +231,11 @@ PROCESS_THREAD(broadcast_process, ev, data)
 
 	static struct etimer et;
         int ret;
-        
 	broadcast_open(&broadcast,129, &broadcast_callbacks);
-        print_usage();         
+	 print_usage();         
  	      
          /* Send a broadcast message every 2-4 seconds */
-        etimer_set(&et, CLOCK_SECOND * 4 + random_rand() % (CLOCK_SECOND * 4));
-        
-	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+        etimer_set(&et, CLOCK_SECOND * 2 + random_rand() % (CLOCK_SECOND * 2));
        
         while(1){
 
@@ -290,11 +243,10 @@ PROCESS_THREAD(broadcast_process, ev, data)
         PROCESS_WAIT_EVENT_UNTIL (ev == serial_line_event_message);	
              
        if (ev ==serial_line_event_message ){   
-       
-       	printf(" %s\n", (char *)data);        
+                    
        	const char *c = (char *)data; 
-
-       	switch(*c){
+ 
+      	switch(*c){
 
            case 'b':
                 broadcast_message();
@@ -313,7 +265,7 @@ PROCESS_THREAD(broadcast_process, ev, data)
 }
 
 	}
-}
+} 
 	
 
 	PROCESS_END();
@@ -328,29 +280,19 @@ PROCESS_THREAD(unicast_process,ev,data)
 	PROCESS_EXITHANDLER(unicast_close(&unicast);)
 	PROCESS_BEGIN();
 
-	unicast_open(&unicast, 129,&unicast_callbacks);
- 	static struct etimer et;
-        const char *c = (char *)data;
-
-	/*Send a unicast message every 8 seconds */
-
-      //  PROCESS_WAIT_EVENT_UNTIL (ev == serial_line_event_message);
-        etimer_set(&et, CLOCK_SECOND * 8 + random_rand() % (CLOCK_SECOND * 8));
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-       
-        while(1){
+	unicast_open(&unicast, 146, &unicast_callbacks);
+ 	static struct etimer et; 
         
-	/*Check the character on the serial line */
-	PROCESS_WAIT_EVENT_UNTIL (ev == serial_line_event_message);
-       // etimer_set(&et, CLOCK_SECOND * 8 + random_rand() % (CLOCK_SECOND * 8));
-       // PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-
-        if (ev == serial_line_event_message){
-	  etimer_set(&et, CLOCK_SECOND * 8 + random_rand() % (CLOCK_SECOND * 8));
-          PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-      		
-	  	unicast_message();
-	}
+	PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_CONTINUE);
+        const char *c = (char *)data;
+	if ( *c == 'b') {         
+       etimer_set(&et, CLOCK_SECOND * 2 + random_rand() % (CLOCK_SECOND * 2));
+	
+	while(1){
+        
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+    	unicast_message();
+}
 }
 	PROCESS_END();
 
