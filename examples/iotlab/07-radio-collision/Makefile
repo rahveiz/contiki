@@ -15,7 +15,7 @@ all: clean $(CONTIKI_PROJECT)
 	mv $(CONTIKI_PROJECT).$(TARGET) $(CONTIKI_PROJECT)_$(NET_CONF).$(TARGET) 
 
 PROJECT_SOURCEFILES +=pressure_light.c
-PROJECT_SOURCEFILES +=temperature.c
-PROJECT_SOURCEFILES += common-config.c
+//PROJECT_SOURCEFILES +=temperature.c
+//PROJECT_SOURCEFILES += common-config.c
 CONTIKI = ../../..
 include $(CONTIKI)/Makefile.include
