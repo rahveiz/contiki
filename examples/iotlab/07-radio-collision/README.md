@@ -1,7 +1,7 @@
 # MAC Collision examples
 =======================
 
-## MAC Collision examples on M3 nodes
+## MAC Collision examples on M3  and WSN430 nodes
 ----------------------
 
 
