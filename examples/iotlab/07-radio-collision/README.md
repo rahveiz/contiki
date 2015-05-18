@@ -1,7 +1,7 @@
 # MAC Collision examples
 =======================
 
-## MAC Collision examples on M3  and WSN430 nodes
+## MAC Collision examples on M3 nodes
 ----------------------
 
 
@@ -9,6 +9,6 @@
 
 - NullMAC layer
 - CSMA layer
-- Default Contiki layer
+- Default Contiki layer: ContikiMAC
 
 
