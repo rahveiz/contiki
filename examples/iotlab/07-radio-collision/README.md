@@ -12,15 +12,16 @@ This project contains a radio collision test using differents MAC layer.
 - Default Contiki layer: ContikiMAC
 
 When receiving the character 'h', print the help.
+
 When receiving the character 'b', sends a broadcast message at maximal power.
 
 The report message written on the serial link contains:
 
 Energy consumption (in time):
--LPC
--CPU
--LISTEN
--TRANSMIT
+- LPC
+- CPU
+- LISTEN
+- TRANSMIT
 
 
 "dest;broadcast message received from:",source,"ping".
