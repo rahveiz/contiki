@@ -1,14 +1,8 @@
 #include "contiki.h"
-#include "random.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include "net/rime.h"
 #include "energest.h"
 #include "dev/serial-line.h"
-
-//#include "dev/light-sensor.h"
-//#include "dev/pressure-sensor.h"
-//#include "pressure_light.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -27,11 +21,10 @@ struct energy_time {
 static struct energy_time last;
 static struct energy_time diff;
 
-static void abc_recv(struct broadcast_conn *c);
-
 /*These hold the broadcast and unicast structures*/
 static struct broadcast_conn broadcast; 
 static struct unicast_conn unicast;
+
 int send = 0;
 static rimeaddr_t k;
 
@@ -45,14 +38,14 @@ AUTOSTART_PROCESSES(&broadcast_process,&unicast_process);
 /* Conversion energy-time values on mW values to M3 and WSN430 */
 
 
-static void energy_consumption_M3(){
+static void energy_consumption_WSN430(){
 
 	int Vcc = 3;
 
-  diff.consumption_CPU = (diff.cpu /CLOCK_SECOND) * 0.4 * Vcc;
-  diff.consumption_LPM = (diff.lpm /CLOCK_SECOND) * 0.000002 * Vcc;
-  diff.consumption_TX = (diff.transmit /CLOCK_SECOND) * 14 * Vcc;
-  diff.consumption_RX = (diff.listen /CLOCK_SECOND) * 12.3 * Vcc;
+  diff.consumption_CPU = (diff.cpu /CLOCK_SECOND) * 0.000000330  * Vcc;
+  diff.consumption_LPM = (diff.lpm /CLOCK_SECOND) * 0.2 * Vcc;
+  diff.consumption_TX = (diff.transmit /CLOCK_SECOND) * 17.4 * Vcc;
+  diff.consumption_RX = (diff.listen /CLOCK_SECOND) * 0.0188 * Vcc;
 
 }
 
@@ -69,8 +62,8 @@ static void unicast_message_resend () {
 
         int val = 0;
 
-        packetbuf_copyfrom("pong",4);
-//        printf(" rimeaddr_node_addr = %d.%d \n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1]);
+        packetbuf_copyfrom("pong",5);
+        printf(" rimeaddr_node_addr = %d.%d \n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1]);
         printf(" sending unicast to %d.%d\n",k.u8[0],k.u8[1]);
                    
         val = unicast_send(&unicast,&k);
@@ -105,10 +98,6 @@ static void  broadcast_recv(struct broadcast_conn *c,const rimeaddr_t * from)
      
   printf("%d.%d;broadcast message received from %d.%d: '%s'\n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1],k.u8[0], k.u8[1], (char *)packetbuf_dataptr());	
 
-	
-/* These functions show the pressure and light values */
-
- //	process_light_pressure();
 
 /* Asynchronous event to start the unicast process */
        
@@ -123,8 +112,7 @@ static const struct broadcast_callbacks broadcast_callbacks = {broadcast_recv,ab
 static void recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
 {
 
-printf(" unicast message received from %d.%d: '%s'\n",from->u8[0], from->u8[1], (char *)packetbuf_dataptr());
-        
+printf("%d.%d;unicast message received from %d.%d: '%s'\n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1],from->u8[0], from->u8[1], (char *)packetbuf_dataptr());
 
 }
 static const struct unicast_callbacks unicast_callbacks = {recv_uc};
@@ -135,12 +123,7 @@ static const struct unicast_callbacks unicast_callbacks = {recv_uc};
 
 static void broadcast_message() {
 
-	   int ret;
-
-/*Inizialize M3 nodes configuration */
-       
-	 //   config_light();
-        //   config_pressure();
+	   int ret,Vcc = 3;
 
            /* Energy consumption start */                                                                 
            last.cpu = energest_type_time(ENERGEST_TYPE_CPU);
@@ -168,7 +151,7 @@ static void broadcast_message() {
            diff.transmit = energest_type_time(ENERGEST_TYPE_TRANSMIT) -last.transmit;
            diff.listen = energest_type_time(ENERGEST_TYPE_LISTEN) - last.listen;
 
-           energy_consumption_M3();
+           energy_consumption_WSN430();
 	
 }
 /*---------------------------------------------------------------------------*/

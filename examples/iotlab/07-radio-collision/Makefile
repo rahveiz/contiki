@@ -1,4 +1,3 @@
-TARGET=iotlab-m3
 
 CONTIKI_PROJECT = mac_collision
 
