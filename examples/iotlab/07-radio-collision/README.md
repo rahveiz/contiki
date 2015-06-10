@@ -26,12 +26,12 @@ Energy consumption (in time):
 When receiving the broadcast message:
 Example:
 ```
-"150.112;broadcast message received from:",174.124,"ping".
+150.112;broadcast message received from:,174.124,"ping".
 ```
 When receiving the broadcast message, send a unicast message.
 Example:
 ```
-"174.124;unicast message received from:",150.112,"pong".
+174.124;unicast message received from:150.112,"pong".
 ```
 
 
