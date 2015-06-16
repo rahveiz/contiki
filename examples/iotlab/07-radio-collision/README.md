@@ -21,6 +21,14 @@ Energy consumption (in time):
 - LISTEN
 - TRANSMIT
 
+### Command for WSN430 CC2420 using nullmac protocol:
+ make TARGET=wsn430 RADIO=WITH_CC2420 NET_CONF=nullmac
+ 
+### Command for WSN430 CC2420 using CSMA protocol: 
+ make TARGET=wsn430 RADIO=WITH_CC2420 NET_CONF=csma
+
+If the MAC protocol used is Default protocol, it is no necessary to specify the NET_CONF configuration 
+
 ## Serial reporting
 
 When receiving the broadcast message:
