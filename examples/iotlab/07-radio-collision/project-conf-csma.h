@@ -3,11 +3,7 @@
 /* radio 802.15.4 conf */
 #define RF2XX_CHANNEL 11
 #define RF2XX_LEDS_ON
-#define RF2XX_TX_POWER PHY_POWER_5dBm // power max.
-/*
-* Channels: default=11, max=26, min=11.
-* TX power: default=0dBm, max=5dBm, min=m30dBm. (see openlab/net/phy.h)
-*/
+#define RF2XX_TX_POWER PHY_POWER_3dBm // power max on M3 nodes
 
 #undef NETSTACK_CONF_MAC
 #define NETSTACK_CONF_MAC csma_driver
