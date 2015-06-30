@@ -35,23 +35,6 @@ PROCESS(unicast_process, "Unicast process");
 
 AUTOSTART_PROCESSES(&broadcast_process,&unicast_process);
 /*---------------------------------------------------------------------------*/
-/* Conversion energy-time values on mW values to M3 and WSN430 */
-
-
-static void energy_consumption_WSN430(){
-
-	int Vcc = 3;
-
-  diff.consumption_CPU = (diff.cpu /CLOCK_SECOND) * 0.000000330  * Vcc;
-  diff.consumption_LPM = (diff.lpm /CLOCK_SECOND) * 0.2 * Vcc;
-  diff.consumption_TX = (diff.transmit /CLOCK_SECOND) * 17.4 * Vcc;
-  diff.consumption_RX = (diff.listen /CLOCK_SECOND) * 0.0188 * Vcc;
-
-}
-
-
-/*---------------------------------------------------------------------------*/
-/* This function sends a unicast message to nodes on the list */
 
 static void start () {
 
@@ -63,7 +46,6 @@ static void unicast_message_resend () {
         int val = 0;
 
         packetbuf_copyfrom("pong",5);
-        printf(" rimeaddr_node_addr = %d.%d \n", rimeaddr_node_addr.u8[0],rimeaddr_node_addr.u8[1]);
         printf(" sending unicast to %d.%d\n",k.u8[0],k.u8[1]);
                    
         val = unicast_send(&unicast,&k);
@@ -84,8 +66,6 @@ static void unicast_message_resend () {
 {
 	struct energy_time *incoming= (struct energy_time *)packetbuf_dataptr();
 	printf(" Energy consumption (Time): CPU: %lu LPM: %lu TRANSMIT: %lu LISTEN: %lu \n", incoming->cpu, incoming->lpm,incoming->transmit, incoming->listen);
-	printf(" Energy consumption (mW): CPU: %lu LPM: %lu TRANSMIT: %lu LISTEN: %lu \n",incoming->consumption_CPU,incoming->consumption_LPM,incoming->consumption_TX,incoming->consumption_RX);
-
 }
 
 /*---------------------------------------------------------------------------*/
@@ -123,7 +103,7 @@ static const struct unicast_callbacks unicast_callbacks = {recv_uc};
 
 static void broadcast_message() {
 
-	   int ret,Vcc = 3;
+	   int ret;
 
            /* Energy consumption start */                                                                 
            last.cpu = energest_type_time(ENERGEST_TYPE_CPU);
@@ -150,8 +130,6 @@ static void broadcast_message() {
            diff.lpm = energest_type_time(ENERGEST_TYPE_LPM) - last.lpm;
            diff.transmit = energest_type_time(ENERGEST_TYPE_TRANSMIT) -last.transmit;
            diff.listen = energest_type_time(ENERGEST_TYPE_LISTEN) - last.listen;
-
-           energy_consumption_WSN430();
 	
 }
 /*---------------------------------------------------------------------------*/
