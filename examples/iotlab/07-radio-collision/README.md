@@ -4,7 +4,6 @@
 ## MAC Collision test on CC2420 and CC1101 nodes
 ----------------------
 
-
 This project contains a radio collision test using differents MAC layer.
 
 - NullMAC layer
@@ -14,7 +13,6 @@ This project contains a radio collision test using differents MAC layer.
 When receiving the character 'h', print the help.
 
 When receiving the character 'b', sends a broadcast message at maximal power.
-
 The report message written on the serial link contains:
 
 Energy consumption (in time):
@@ -23,15 +21,16 @@ Energy consumption (in time):
 - LISTEN
 - TRANSMIT
 
-
-"dest;broadcast message received from:",source,"ping".
+```
+"150.112;broadcast message received from:",12.124,"ping".
+```
 
 When receiving the broadcast message, send a unicast message.
-
 The report message written on the serial link contains:
 
-"dest;unicast message received from:",source,"pong".
-
+```
+"12.124;unicast message received from:",150.112,"pong".
+```
 
 
 
