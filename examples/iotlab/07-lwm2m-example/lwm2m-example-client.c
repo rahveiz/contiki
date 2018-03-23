@@ -61,7 +61,7 @@ PROCESS_THREAD(lwm2m_example_client, ev, data)
 
   setup_lwm2m_servers();
 
-  etimer_set(&timer, CLOCK_SECOND *15);
+  etimer_set(&timer, CLOCK_SECOND *30);
 
   while(1) {
     PROCESS_WAIT_EVENT();
