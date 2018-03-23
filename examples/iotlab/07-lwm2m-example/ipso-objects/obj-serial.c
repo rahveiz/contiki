@@ -27,7 +27,7 @@ write_serial(lwm2m_context_t *ctx, const uint8_t *inbuf, size_t insize,
   char text_serial[100];
   len = ctx->reader->read_string(ctx, inbuf, insize,
                                  (uint8_t *)&text_serial, sizeof(text_serial)); 
-  strcpy(obj_serial_data, text_serial);
+  obj_serial_data = text_serial;
   printf("%s\n", obj_serial_data);
   return len;
 }
