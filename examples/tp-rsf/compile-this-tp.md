@@ -5,21 +5,19 @@
 ```bash
 <you>@<yourcomputer>~$ ssh <login>@<site>.iot-lab.info
 <login>@<site>~$ git clone https://github.com/iot-lab/openlab.git
-<login>@<site>~$ git clone https://github.com/iot-lab/contiki.git
+<login>@<site>~$ git clone https://github.com/reseaux-sans-fil/contiki.git
 ```
 
-2. The example for this TP is located in `contiki/examples/tp-RSF/`. View and analyze the source code
+2. The example for this TP is located in `contiki/examples/tp-rsf/`. View and analyze the source code
 ```bash
-<login>@<site>~$ cd contiki/examples/tp-RSF/
-<login>@<site>:~/contiki/examples/tp-RSF/$ less node.c
+<login>@<site>~$ cd contiki/examples/tp-rsf/
+<login>@<site>:~/contiki/examples/tp-rsf/$ less node.c
 less project-conf-contikimac.h
 less project-conf-tsch.h
 ```
 
 3. Compile the example
 ```bash
-<you>@<yourcomputer>~$ ssh <login>@<site>.iot-lab.info
-<login>@<site>~$ cd contiki/examples/tp-rsf
 <login>@<site>:~/contiki/examples/tp-rsf$ make tp-rsf
 ```
 

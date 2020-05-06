@@ -30,6 +30,7 @@ CONTIKI_WITH_RIME = 1
 ROLE ?= source
 PROTOCOL ?= contikimac
 LEADERBOARD_SINK ?= 0
+TARGET ?= iotlab-m3
 
 # Sink argument
 ARG_ROLE_SINK = sink
