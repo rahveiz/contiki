@@ -13,7 +13,7 @@ All the tutorials must be done in the Strasbourg site (not in Grenoble!).
 # Grading system
 
 ## Deliverables
-All the points must include a screenshot/figure and a brief explanation
+Every point must include a screenshot/figure and a brief explanation
 - Authentication in the webportal showing that your accounted is correctly logged in
 - Access through ssh to the Strasbourg site
 - Your first experiment collecting sensor data
@@ -24,6 +24,7 @@ All the points must include a screenshot/figure and a brief explanation
 - TSCH communication working
 - Power consumption comparison between ContikiMAC and TSCH
 - Wireshark packet analysis
+- Source code (project-conf-*.h, node.c)
 - Your team rank in the global leaderboards
 
 The quality of the figures and explanations for each point will determine the grade.
@@ -65,17 +66,20 @@ If you have errors plotting in the following steps, in general, it's because X11
 - [Get and compile the firmware for this TP](compile-this-tp.md)
 
 Now that you have some experience on the IoT-LAB, follow the next steps on your own:
-- Deploy ContikiMAC on 2 nodes (1 source and 1 sink)
-  - You will need these binary files: `source-contikimac.iotlab-m3` and `sink-contikimac.iotlab-m3`
+- Deploy ContikiMAC on 2 nodes (1 source and 1 sink) for 5 minutes
   - Use the following channel: trailing number in your iotlab user + 10 (ex: for stras2019wl8, channel: 18). What can happen if all the teams stay in the same channel?
-    - If you can't find where to do this, analyze the example source code once again
-- Deploy 802.15.4-TSCH on 2 nodes
-  - You will need these binary files: `source-tsch.iotlab-m3` and `sink-tsch.iotlab-m3`
+    - You will need to analyze the example source code for this
+    - Re-compile the firmware and use these binary files: `source-contikimac.iotlab-m3` and `sink-contikimac.iotlab-m3`
+  - Monitor the power consumption on the source node (Period = 8244 µs; Average = 4)
+  - Sniff packets on the sink in the corresponding channel
+- Deploy 802.15.4-TSCH on 2 nodes for 5 minutes
   - Use the following PAN ID: trailing number in your iotlab user + 10 (ex: for stras2019wl8, PAN ID: 18). What can happen if all the teams stay in the same PAN ID?
-    - If you can't find where to do this, analyze the example source code once again
-- Monitor the power consumption on the source for both cases during 5 minutes
-- Compare. What differences do you notice between the two protocols? Explain the cause of that difference
-- Sniff packets using 1 node and analyze them in Wireshark for both cases (choose only 1 channel to monitor, and make sure it is used by TSCH). Find your team packets, other teams packets, regular data packets and beacons.
+    - You will need to analyze the example source code for this
+    - Re-compile the firmware and use these binary files: `source-tsch.iotlab-m3` and `sink-tsch.iotlab-m3`
+  - Monitor the power consumption on the source node (Period = 8244 µs; Average = 4)
+  - Sniff packets on the sink in. Choose only 1 channel to sniff, and make sure it is used by TSCH.
+- Compare the results. What differences do you notice in the power consumption between the two protocols? Explain the cause of that difference
+- Analyze them in Wireshark for both cases . Find your team packets, other teams packets, regular data packets and beacons.
 - Deploy 1 source node with each protocol for the final round and count your delivered packets.
   - Setup ContikiMAC with the following parameters:
     - PAN ID: 0xF00D
