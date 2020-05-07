@@ -1,11 +1,11 @@
 # Wireless Networks Lab - IoT
 
-In this lab you are going to learn how to deploy an experiment on a remote IoT testbed, the [FIT-IoT LAB](https://www.iot-lab.info/).
-You are going to deploy [ContikiMAC](http://dunkels.com/adam/dunkels11contikimac.pdf) and [802.15.4-TSCH](http://www.simonduquennoy.net/papers/duquennoy17tsch.pdf) on an [M3 open node](https://www.iot-lab.info/hardware/m3/), analyze their packets and compare the performance.
+In this lab you are going to apply all what you have seen in this course and get hands-on experience with real devices connected in a wireless network.
+You are going to make experiments in a remote IoT testbed, the [FIT-IoT LAB](https://www.iot-lab.info/), that is a remote site with real devices that can be programmed and monitored remotely.
+You are going to deploy [ContikiMAC](http://dunkels.com/adam/dunkels11contikimac.pdf) and an implementation of [802.15.4-TSCH](http://www.simonduquennoy.net/papers/duquennoy17tsch.pdf) on an [M3 open node](https://www.iot-lab.info/hardware/m3/), analyze their packets and compare the performance.
 
 You will hand in a small report with a screenshot/figure of each step and a brief explanation of what is it about (it can be in french).
 
-<!-- The first 3 sections of this assignment are based on the [tutorials](https://www.iot-lab.info/tutorials/) available on the FIT-IoT LAB website and a workshop of the Ph.D. summer school ResCom 2019. -->
 This assignment is based on the [tutorials](https://www.iot-lab.info/tutorials/) available on the FIT-IoT LAB website.
 
 All the tutorials must be done in the Strasbourg site (not in Grenoble!).
@@ -13,17 +13,17 @@ All the tutorials must be done in the Strasbourg site (not in Grenoble!).
 # Grading system
 
 ## Deliverables
-Every point must include a screenshot/figure and a brief explanation
-- Authentication in the webportal showing that your accounted is correctly logged in
-- Access through ssh to the Strasbourg site
+Every point must include a screenshot/figure, a brief explanation and the identifiers of all the experiments (experiment ID, node IDs, start time)
+<!-- - Authentication in the web portal showing that your account is correctly logged in -->
+<!-- - Access through ssh to the Strasbourg site -->
 - Your first experiment collecting sensor data, communication working
-- First tutorial monitor power consumption
-- First tutorial monitor radio signal
+- First tutorial, monitor power consumption
+- First tutorial, monitor radio signal
 - ContikiMAC communication working
 - TSCH communication working
 - Power consumption comparison between ContikiMAC and TSCH
 - Wireshark packet analysis
-- Source code (project-conf-*.h, node.c)
+- Source code (project-conf-*.h, node.c and whatever other files that you have modified)
 - Communication in the leaderboard network
 - Your team rank in the global leaderboards ([ContikiMAC](https://drive.google.com/file/d/1DRjdNB97H6NGtvY83zxyvSgVBfsDX99B/view?usp=sharing) and [TSCH](https://drive.google.com/file/d/1NMQGJutBAqL0IUB6WoJ5QQgXBRnFGKYo/view?usp=sharing))
 - Monitoring radio signal in all 802.15.4 channels simultaneously with a single node
@@ -33,8 +33,8 @@ The quality of the figures and explanations for each point will determine the gr
 # 1 - Authentication Settings
 - Make teams of 2 students each and decide a name for your team
 - Get your temporary login / password (ask me by private message, telling me the name of the members of the team)
-- [Log into the Webportal](https://www.iot-lab.info/testbed/)
-- [Configure Your SSH Access](https://www.iot-lab.info/tutorials/ssh-access) in the Webportal
+- [Log into the web portal](https://www.iot-lab.info/testbed/)
+- [Configure Your SSH Access](https://www.iot-lab.info/tutorials/ssh-access) in the web portal
 
 # 2 - First Experiment
 - [Create a New Experiment with M3 nodes and the Web Portal](https://www.iot-lab.info/tutorials/submit-experiment-m3-web/)
@@ -68,27 +68,27 @@ If you have errors plotting in the following steps, in general, it's because X11
 Now that you have some experience on the IoT-LAB, follow the next steps on your own:
 - Deploy ContikiMAC on 2 nodes (1 source and 1 sink) for 10 minutes
   - Use the following channel: trailing number in your iotlab user + 10 (ex: for stras2019wl8, channel: 18). What can happen if all the teams stay in the same channel?
-    - You will need to analyze the example source code for this
+    - You will need to analyze the example source code to change the channel
     - Re-compile the firmware and use these binary files: `source-contikimac.iotlab-m3` and `sink-contikimac.iotlab-m3`
   - Monitor the power consumption on the source node (Period = 8244 µs; Average = 4)
   - Sniff packets on the sink in the corresponding channel
 - Deploy 802.15.4-TSCH on 2 nodes for 10 minutes
   - Use the following PAN ID: trailing number in your iotlab user + 10 (ex: for stras2019wl8, PAN ID: 18). What can happen if all the teams stay in the same PAN ID?
-    - You will need to analyze the example source code for this
+    - You will need to analyze the example source code to change the PAN ID
     - Re-compile the firmware and use these binary files: `source-tsch.iotlab-m3` and `sink-tsch.iotlab-m3`
   - Monitor the power consumption on the source node (Period = 8244 µs; Average = 4)
   - Sniff packets on the sink in. Choose only 1 channel to sniff, and make sure it is used by TSCH.
-- Compare the results. What differences do you notice in the power consumption between the two protocols? Explain the cause of that difference
+- Compare the results. What differences do you notice in the power consumption between the two protocols? Why is that?
 - Analyze them in Wireshark for both cases . Find your team packets, other teams packets, regular data packets, acknowledgments and beacons.
 - Deploy 1 source node with each protocol and connect them to the leaderboard network and count your delivered packets:
   - Setup ContikiMAC with the following parameters:
     - PAN ID: 0xF00D
-    - Channel: 22
+    - Channel: 19
   - Setup TSCH with the following parameters:
     - PAN ID: 0xC0DE
   - Edit the code so that you send **your team name** in the packet **payload**.
   - Have a look at the **leaderboards** for [ContikiMAC](https://drive.google.com/file/d/1DRjdNB97H6NGtvY83zxyvSgVBfsDX99B/view?usp=sharing) and [TSCH](https://drive.google.com/file/d/1NMQGJutBAqL0IUB6WoJ5QQgXBRnFGKYo/view?usp=sharing)!
-- Monitor the radio signal for all the channels at the same time during 2 minutes using a single node (maximize your plot figure to see the results better)
+- Monitor the radio signal for all the channels at the same time during 2 minutes using a single node (maximize your plot figure to see the results better). Can you find any pattern?
 
 ---------
 ---------
